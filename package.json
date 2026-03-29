@@ -1,0 +1,26 @@
+{
+  "name": "carechain-nft",
+  "version": "1.0.0",
+  "description": "CareChain NFT - Concierge Medicine on Blockchain (XRPL)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElGrimes/carechain-nft.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ElGrimes/carechain-nft/issues"
+  },
+  "homepage": "https://github.com/ElGrimes/carechain-nft#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "xrpl": "^4.6.0",
+    "xumm-sdk": "^1.11.2"
+  }
+}
