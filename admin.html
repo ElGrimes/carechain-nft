@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareChain NFT — Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060A12;
+      --surface: #0C1220;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(59,130,246,0.3);
+      --blue: #3B82F6;
+      --blue-bright: #60A5FA;
+      --blue-glow: rgba(59,130,246,0.15);
+      --white: #FFFFFF;
+      --gray: rgba(255,255,255,0.5);
+      --gray-light: rgba(255,255,255,0.7);
+      --green: #10B981;
+      --red: #EF4444;
+      --gold: #F59E0B;
+      --diamond: #60A5FA;
+      --silver: #9CA3AF;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(6, 10, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+    }
+
+    .logo-text span { color: var(--blue); }
+
+    .nav-badge {
+      font-size: 0.75rem;
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* LOGIN SCREEN */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .login-card h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-card p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      border-color: var(--blue);
+    }
+
+    .btn {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .btn:hover { opacity: 0.85; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+    }
+
+    .btn-outline:hover {
+      background: var(--blue-glow);
+      opacity: 1;
+    }
+
+    .btn-danger {
+      background: var(--red);
+    }
+
+    .btn-success {
+      background: var(--green);
+    }
+
+    .btn-sm {
+      width: auto;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .error-msg {
+      color: var(--red);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    /* DASHBOARD */
+    .dashboard {
+      display: none;
+      padding: 6rem 2.5rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .institution-badge {
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    /* METRIC CARDS */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .metric-value.green { color: var(--green); }
+    .metric-value.blue { color: var(--blue-bright); }
+
+    /* TIER CARDS */
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .tier-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .tier-card.diamond { border-color: rgba(96,165,250,0.3); }
+    .tier-card.gold { border-color: rgba(245,158,11,0.3); }
+    .tier-card.silver { border-color: rgba(156,163,175,0.3); }
+
+    .tier-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .tier-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .tier-name.diamond { color: var(--diamond); }
+    .tier-name.gold { color: var(--gold); }
+    .tier-name.silver { color: var(--silver); }
+
+    .tier-price {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .tier-price span {
+      font-size: 0.8rem;
+      color: var(--gray);
+      font-weight: 400;
+    }
+
+    .tier-capacity {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+    }
+
+    .capacity-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .capacity-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    .capacity-fill.diamond { background: var(--diamond); }
+    .capacity-fill.gold { background: var(--gold); }
+    .capacity-fill.silver { background: var(--silver); }
+
+    /* SECTIONS */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    /* PATIENT TABLE */
+    .patient-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .patient-table th {
+      text-align: left;
+      font-size: 0.75rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .patient-table td {
+      padding: 0.85rem 0.75rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .patient-table tr:last-child td { border-bottom: none; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-active {
+      background: rgba(16,185,129,0.15);
+      color: var(--green);
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    .status-inactive {
+      background: rgba(239,68,68,0.15);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .tier-badge.diamond {
+      background: rgba(96,165,250,0.15);
+      color: var(--diamond);
+      border: 1px solid rgba(96,165,250,0.3);
+    }
+
+    .tier-badge.gold {
+      background: rgba(245,158,11,0.15);
+      color: var(--gold);
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+
+    .tier-badge.silver {
+      background: rgba(156,163,175,0.15);
+      color: var(--silver);
+      border: 1px solid rgba(156,163,175,0.3);
+    }
+
+    .wallet-addr {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--gray-light);
+    }
+
+    /* ENROLL MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .modal h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .select-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* NOTIFICATION */
+    .notification {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      font-size: 0.9rem;
+      z-index: 300;
+      display: none;
+      max-width: 320px;
+    }
+
+    .notification.success {
+      border-color: rgba(16,185,129,0.4);
+      color: var(--green);
+    }
+
+    .notification.error {
+      border-color: rgba(239,68,68,0.4);
+      color: var(--red);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray);
+    }
+
+    .empty-state p { font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="logo">
+      <div class="logo-icon">⛓️</div>
+      <span class="logo-text">CareChain<span>NFT</span></span>
+    </a>
+    <span class="nav-badge">Admin Portal</span>
+  </nav>
+
+  <!-- LOGIN SCREEN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <h1>Admin Portal</h1>
+      <p>Sign in to manage your CareChain NFT membership program</p>
+      <div class="form-group">
+        <label>Institution ID</label>
+        <input type="text" id="institutionInput" placeholder="e.g. PILOT_001" />
+      </div>
+      <div class="form-group">
+        <label>Access Code</label>
+        <input type="password" id="accessCodeInput" placeholder="Enter your access code" />
+      </div>
+      <div class="error-msg" id="loginError">
+        Invalid Institution ID or Access Code
+      </div>
+      <button class="btn" onclick="handleLogin()">Sign In</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+
+    <div class="dashboard-header">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.25rem;">
+          Manage memberships, track revenue, and monitor your program
+        </p>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <span class="institution-badge" id="institutionBadge">PILOT_001</span>
+        <button class="btn btn-outline btn-sm" onclick="handleLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- METRICS -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Monthly Revenue</div>
+        <div class="metric-value green" id="metricRevenue">$0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Active Members</div>
+        <div class="metric-value blue" id="metricActive">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total Enrolled</div>
+        <div class="metric-value" id="metricTotal">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Total Revenue</div>
+        <div class="metric-value green" id="metricTotalRevenue">$0</div>
+      </div>
+    </div>
+
+    <!-- TIER CARDS -->
+    <div class="tiers-grid">
+      <div class="tier-card diamond">
+        <div class="tier-header">
+          <span class="tier-name diamond">💎 Diamond</span>
+          <span class="tier-price" id="diamondPrice">$399<span>/mo</span></span>
+        </div>
+        <div class="tier-capacity" id="diamondCapacity">0 / 25 members</div>
+        <div class="capacity-bar">
+          <div class="capacity-fill diamond" id="diamondBar" style="width: 0%"></div>
+        </div>
+        <button class="btn btn-sm" onclick="openEnrollModal('diamond')">
+          + Enroll Patient
+        </button>
+      </div>
+      <div class="tier-card gold">
+        <div class="tier-header">
+          <span class="tier-name gold">🥇 Gold</span>
+          <span class="tier-price" id="goldPrice">$199<span>/mo</span></span>
+        </div>
+        <div class="tier-capacity" id="goldCapacity">0 / 75 members</div>
+        <div class="capacity-bar">
+          <div class="capacity-fill gold" id="goldBar" style="width: 0%"></div>
+        </div>
+        <button class="btn btn-sm" onclick="openEnrollModal('gold')">
+          + Enroll Patient
+        </button>
+      </div>
+      <div class="tier-card silver">
+        <div class="tier-header">
+          <span class="tier-name silver">🥈 Silver</span>
+          <span class="tier-price" id="silverPrice">$99<span>/mo</span></span>
+        </div>
+        <div class="tier-capacity" id="silverCapacity">0 / 200 members</div>
+        <div class="capacity-bar">
+          <div class="capacity-fill silver" id="silverBar" style="width: 0%"></div>
+        </div>
+        <button class="btn btn-sm" onclick="openEnrollModal('silver')">
+          + Enroll Patient
+        </button>
+      </div>
+    </div>
+
+    <!-- PATIENT ROSTER -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Active Members</span>
+        <button class="btn btn-outline btn-sm" onclick="openEnrollModal('gold')">
+          + New Enrollment
+        </button>
+      </div>
+      <div id="patientRoster">
+        <div class="empty-state">
+          <p>No active members yet. Enroll your first patient to get started.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ENROLL MODAL -->
+  <div class="modal-overlay" id="enrollModal">
+    <div class="modal">
+      <h2>Enroll New Patient</h2>
+      <p>Enter the patient's Xaman wallet address and select their subscription tier.</p>
+      <div class="form-group">
+        <label>Patient Wallet Address</label>
+        <input
+          type="text"
+          id="patientWalletInput"
+          placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        />
+      </div>
+      <div class="form-group">
+        <label>Subscription Tier</label>
+        <select class="select-input" id="tierSelect">
+          <option value="diamond">💎 Diamond — $399/month</option>
+          <option value="gold" selected>🥇 Gold — $199/month</option>
+          <option value="silver">🥈 Silver — $99/month</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-success" onclick="handleEnroll()">
+          Confirm Enrollment
+        </button>
+        <button class="btn btn-outline" onclick="closeEnrollModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION -->
+  <div class="notification" id="notification"></div>
+
+  <script>
+    // ============================================================
+    // CareChain Admin Dashboard — Frontend Logic
+    // This is a demo interface. In production this connects
+    // to the CareChain backend API which runs the Node.js
+    // scripts we built. For the pilot demo we simulate
+    // the data locally so the interface is fully functional.
+    // ============================================================
+
+    // Demo access codes — in production these are managed
+    // by your secure backend authentication system
+    const DEMO_CREDENTIALS = {
+      "PILOT_001": "carechain2026"
+    }
+
+    // Demo institution data — mirrors what our
+    // institution-config.js generates on the backend
+    let institutionData = {
+      "PILOT_001": {
+        name: "CareChain Pilot Clinic",
+        location: "Houston, TX",
+        status: "PILOT",
+        tiers: {
+          diamond: { price: 399, active: 0, max: 25 },
+          gold:    { price: 199, active: 1, max: 75 },
+          silver:  { price: 99,  active: 0, max: 200 }
+        },
+        metrics: {
+          monthlyRevenue: 199,
+          totalRevenue: 199,
+          totalEnrolled: 1,
+          totalBurned: 0,
+          totalReissued: 0
+        },
+        patients: [
+          {
+            wallet: "rDYGWXBu9FCV9Cw3GvMqQJYThmRB2pnNo",
+            tier: "gold",
+            status: "active",
+            enrolled: "2026-03-31",
+            renewal: "2026-04-30"
+          }
+        ]
+      }
+    }
+
+    let currentInstitution = null
+
+    // ---- LOGIN ------------------------------------------
+    function handleLogin() {
+      const id = document.getElementById("institutionInput").value.trim()
+      const code = document.getElementById("accessCodeInput").value.trim()
+      const error = document.getElementById("loginError")
+
+      if (DEMO_CREDENTIALS[id] && DEMO_CREDENTIALS[id] === code) {
+        currentInstitution = id
+        error.style.display = "none"
+        document.getElementById("loginScreen").style.display = "none"
+        document.getElementById("dashboard").style.display = "block"
+        loadDashboard(id)
+      } else {
+        error.style.display = "block"
+      }
+    }
+
+    // Allow Enter key to submit login
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleLogin()
+    })
+
+    // ---- LOGOUT -----------------------------------------
+    function handleLogout() {
+      currentInstitution = null
+      document.getElementById("dashboard").style.display = "none"
+      document.getElementById("loginScreen").style.display = "flex"
+      document.getElementById("institutionInput").value = ""
+      document.getElementById("accessCodeInput").value = ""
+    }
+
+    // ---- LOAD DASHBOARD ---------------------------------
+    function loadDashboard(institutionID) {
+      const data = institutionData[institutionID]
+      if (!data) return
+
+      // Set institution badge
+      document.getElementById("institutionBadge").textContent = institutionID
+
+      // Update metrics
+      document.getElementById("metricRevenue").textContent =
+        "$" + data.metrics.monthlyRevenue.toLocaleString()
+      document.getElementById("metricActive").textContent =
+        data.patients.filter(p => p.status === "active").length
+      document.getElementById("metricTotal").textContent =
+        data.metrics.totalEnrolled
+      document.getElementById("metricTotalRevenue").textContent =
+        "$" + data.metrics.totalRevenue.toLocaleString()
+
+      // Update tier cards
+      updateTierCard("diamond", data)
+      updateTierCard("gold", data)
+      updateTierCard("silver", data)
+
+      // Update patient roster
+      renderPatientRoster(data.patients)
+    }
+
+    // ---- UPDATE TIER CARD -------------------------------
+    function updateTierCard(tier, data) {
+      const t = data.tiers[tier]
+      const pct = (t.active / t.max) * 100
+
+      document.getElementById(tier + "Price").innerHTML =
+        "$" + t.price + "<span>/mo</span>"
+      document.getElementById(tier + "Capacity").textContent =
+        t.active + " / " + t.max + " members"
+      document.getElementById(tier + "Bar").style.width = pct + "%"
+    }
+
+    // ---- RENDER PATIENT ROSTER --------------------------
+    function renderPatientRoster(patients) {
+      const active = patients.filter(p => p.status === "active")
+      const container = document.getElementById("patientRoster")
+
+      if (active.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>No active members yet. Enroll your first patient to get started.</p>
+          </div>`
+        return
+      }
+
+      container.innerHTML = `
+        <table class="patient-table">
+          <thead>
+            <tr>
+              <th>Wallet Address</th>
+              <th>Tier</th>
+              <th>Status</th>
+              <th>Enrolled</th>
+              <th>Next Renewal</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${active.map(p => `
+              <tr>
+                <td>
+                  <span class="wallet-addr">
+                    ${p.wallet.slice(0,8)}...${p.wallet.slice(-6)}
+                  </span>
+                </td>
+                <td>
+                  <span class="tier-badge ${p.tier}">
+                    ${p.tier.charAt(0).toUpperCase() + p.tier.slice(1)}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge status-active">Active</span>
+                </td>
+                <td style="color: var(--gray); font-size: 0.85rem;">
+                  ${p.enrolled}
+                </td>
+                <td style="color: var(--gray); font-size: 0.85rem;">
+                  ${p.renewal}
+                </td>
+                <td>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    onclick="handleRevoke('${p.wallet}', '${p.tier}')">
+                    Revoke
+                  </button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>`
+    }
+
+    // ---- OPEN ENROLL MODAL ------------------------------
+    function openEnrollModal(tier) {
+      document.getElementById("tierSelect").value = tier
+      document.getElementById("patientWalletInput").value = ""
+      document.getElementById("enrollModal").classList.add("active")
+    }
+
+    // ---- CLOSE ENROLL MODAL -----------------------------
+    function closeEnrollModal() {
+      document.getElementById("enrollModal").classList.remove("active")
+    }
+
+    // ---- HANDLE ENROLL ----------------------------------
+    function handleEnroll() {
+      const wallet = document.getElementById("patientWalletInput").value.trim()
+      const tier = document.getElementById("tierSelect").value
+      const data = institutionData[currentInstitution]
+
+      if (!wallet || wallet.length < 25) {
+        showNotification("Please enter a valid wallet address", "error")
+        return
+      }
+
+      // Check if already enrolled
+      const existing = data.patients.find(p => p.wallet === wallet)
+      if (existing && existing.status === "active") {
+        showNotification("This wallet is already enrolled", "error")
+        return
+      }
+
+      // Check capacity
+      if (data.tiers[tier].active >= data.tiers[tier].max) {
+        showNotification(`${tier} tier is at capacity`, "error")
+        return
+      }
+
+      // Add patient to demo data
+      const today = new Date()
+      const renewal = new Date(today)
+      renewal.setDate(renewal.getDate() + 30)
+
+      data.patients.push({
+        wallet: wallet,
+        tier: tier,
+        status: "active",
+        enrolled: today.toISOString().split("T")[0],
+        renewal: renewal.toISOString().split("T")[0]
+      })
+
+      // Update metrics
+      data.tiers[tier].active++
+      data.metrics.monthlyRevenue += data.tiers[tier].price
+      data.metrics.totalRevenue += data.tiers[tier].price
+      data.metrics.totalEnrolled++
+
+      closeEnrollModal()
+      loadDashboard(currentInstitution)
+      showNotification(
+        `✅ Patient enrolled as ${tier} member. NFT minting in progress.`,
+        "success"
+      )
+    }
+
+    // ---- HANDLE REVOKE ----------------------------------
+    function handleRevoke(wallet, tier) {
+      if (!confirm("Revoke this patient's membership? Their NFT will be burned.")) return
+
+      const data = institutionData[currentInstitution]
+      const patient = data.patients.find(p => p.wallet === wallet)
+
+      if (patient) {
+        patient.status = "inactive"
+        data.tiers[tier].active = Math.max(0, data.tiers[tier].active - 1)
+        data.metrics.monthlyRevenue = Math.max(
+          0,
+          data.metrics.monthlyRevenue - data.tiers[tier].price
+        )
+        loadDashboard(currentInstitution)
+        showNotification("✅ Membership revoked. NFT has been burned.", "success")
+      }
+    }
+
+    // ---- SHOW NOTIFICATION ------------------------------
+    function showNotification(message, type) {
+      const n = document.getElementById("notification")
+      n.textContent = message
+      n.className = "notification " + type
+      n.style.display = "block"
+      setTimeout(() => { n.style.display = "none" }, 4000)
+    }
+  </script>
+
+</body>
+</html>
