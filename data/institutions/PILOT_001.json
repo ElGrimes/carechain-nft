@@ -1,0 +1,82 @@
+{
+  "institutionID": "PILOT_001",
+  "name": "CareChain Pilot Clinic",
+  "type": "private_practice",
+  "location": "Houston, TX",
+  "contact": {
+    "name": "Clinic Administrator",
+    "email": "admin@pilotclinic.com",
+    "phone": "555-000-0000"
+  },
+  "status": "pilot",
+  "joinDate": "2026-03-31",
+  "tiers": {
+    "diamond": {
+      "taxon": 0,
+      "name": "Diamond",
+      "monthlyPrice": 399,
+      "currency": "USD",
+      "benefits": [
+        "Significant discounts on all healthcare services",
+        "Priority access to specialty care",
+        "Exclusive wellness programs and home visits",
+        "VIP treatment and concierge amenities",
+        "Dedicated care coordinator",
+        "Exclusive events and healthcare seminars",
+        "Complimentary health screenings",
+        "Customized rewards and incentives",
+        "Access to cutting-edge healthcare technologies"
+      ],
+      "maxMembers": 25,
+      "activeMembers": 0
+    },
+    "gold": {
+      "taxon": 1,
+      "name": "Gold",
+      "monthlyPrice": 199,
+      "currency": "USD",
+      "benefits": [
+        "Significant discounts on healthcare services",
+        "Priority access to healthcare providers",
+        "Access to specialty care services",
+        "Wellness resources and programs",
+        "Exclusive events and workshops",
+        "Personalized health recommendations",
+        "Complimentary health screenings",
+        "Rewards and incentives for engagement",
+        "Access to digital health tools"
+      ],
+      "maxMembers": 75,
+      "activeMembers": 0
+    },
+    "silver": {
+      "taxon": 2,
+      "name": "Silver",
+      "monthlyPrice": 99,
+      "currency": "USD",
+      "benefits": [
+        "Discounts on basic healthcare services",
+        "Access to educational health resources",
+        "Wellness tips and recommendations",
+        "Special offers and promotions",
+        "Incentives for participation",
+        "Community engagement opportunities",
+        "Access to basic health screenings",
+        "Preventative care support",
+        "Customer support and assistance"
+      ],
+      "maxMembers": 200,
+      "activeMembers": 0
+    }
+  },
+  "wallet": null,
+  "patients": [],
+  "metrics": {
+    "totalMinted": 0,
+    "totalBurned": 0,
+    "totalReissued": 0,
+    "monthlyRevenue": 0,
+    "totalRevenue": 0
+  },
+  "notes": "First CareChain pilot program institution"
+}
