@@ -47,7 +47,7 @@
         "Access to digital health tools"
       ],
       "maxMembers": 75,
-      "activeMembers": 0
+      "activeMembers": 1
     },
     "silver": {
       "taxon": 2,
@@ -70,13 +70,22 @@
     }
   },
   "wallet": null,
-  "patients": [],
+  "patients": [
+    {
+      "walletAddress": "rDYGWXBu9FCV9Cw3GvMqQJYThmRB2pnNo",
+      "tier": "Gold",
+      "nftokenID": "00010000025F179DA6A7C446B8217A9D02BC41AA2BEDB6190E1900C300F62027",
+      "enrollDate": "2026-03-31",
+      "nextRenewal": "2026-04-30",
+      "status": "active"
+    }
+  ],
   "metrics": {
-    "totalMinted": 0,
+    "totalMinted": 1,
     "totalBurned": 0,
     "totalReissued": 0,
-    "monthlyRevenue": 0,
-    "totalRevenue": 0
+    "monthlyRevenue": 199,
+    "totalRevenue": 199
   },
   "notes": "First CareChain pilot program institution"
 }
