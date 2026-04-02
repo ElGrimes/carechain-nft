@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareChain NFT — Investor Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060A12;
+      --surface: #0C1220;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(59,130,246,0.3);
+      --blue: #3B82F6;
+      --blue-bright: #60A5FA;
+      --blue-glow: rgba(59,130,246,0.15);
+      --white: #FFFFFF;
+      --gray: rgba(255,255,255,0.5);
+      --gray-light: rgba(255,255,255,0.7);
+      --green: #10B981;
+      --red: #EF4444;
+      --gold: #F59E0B;
+      --diamond: #60A5FA;
+      --silver: #9CA3AF;
+      --purple: #8B5CF6;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(6,10,18,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+    }
+
+    .logo-text span { color: var(--blue); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-badge {
+      font-size: 0.75rem;
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    .live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    main {
+      padding: 6rem 2.5rem 3rem;
+      max-width: 1300px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .page-header p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .last-updated {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-align: right;
+    }
+
+    /* TOP METRICS */
+    .top-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .metric-card.revenue::before { background: var(--green); }
+    .metric-card.members::before { background: var(--blue); }
+    .metric-card.institutions::before { background: var(--purple); }
+    .metric-card.records::before { background: var(--gold); }
+    .metric-card.nfts::before { background: var(--diamond); }
+    .metric-card.renewal::before { background: var(--green); }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric-value.green { color: var(--green); }
+    .metric-value.blue { color: var(--blue-bright); }
+    .metric-value.purple { color: var(--purple); }
+    .metric-value.gold { color: var(--gold); }
+
+    .metric-change {
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    .metric-change.negative { color: var(--red); }
+
+    /* CHARTS ROW */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .chart-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    /* REVENUE CHART */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+      height: 140px;
+      margin-bottom: 0.75rem;
+    }
+
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.5s ease;
+      min-height: 4px;
+    }
+
+    .bar.revenue { background: var(--green); opacity: 0.8; }
+    .bar.members { background: var(--blue); opacity: 0.8; }
+
+    .bar-label {
+      font-size: 0.65rem;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 0.3rem;
+    }
+
+    /* TIER DONUT */
+    .donut-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .donut {
+      position: relative;
+      width: 140px;
+      height: 140px;
+    }
+
+    .donut svg {
+      transform: rotate(-90deg);
+    }
+
+    .donut-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .donut-center-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .donut-center-label {
+      font-size: 0.7rem;
+      color: var(--gray);
+    }
+
+    .donut-legend {
+      width: 100%;
+    }
+
+    .donut-legend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .donut-legend-item:last-child { border-bottom: none; }
+
+    .donut-legend-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .donut-color {
+      width: 10px; height: 10px;
+      border-radius: 2px;
+    }
+
+    /* INSTITUTIONS TABLE */
+    .institutions-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .inst-table { width: 100%; border-collapse: collapse; }
+
+    .inst-table th {
+      text-align: left;
+      font-size: 0.7rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .inst-table td {
+      padding: 1rem 0.75rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .inst-table tr:last-child td { border-bottom: none; }
+
+    .inst-name {
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .inst-location {
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-top: 0.1rem;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .status-pilot {
+      background: rgba(245,158,11,0.15);
+      color: var(--gold);
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+
+    .status-active {
+      background: rgba(16,185,129,0.15);
+      color: var(--green);
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    .revenue-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .revenue-track {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .revenue-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 2px;
+    }
+
+    /* BOTTOM ROW */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .bottom-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .bottom-card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .stat-row:last-child { border-bottom: none; }
+
+    .stat-label { color: var(--gray); }
+
+    .stat-value {
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.blue { color: var(--blue-bright); }
+    .stat-value.gold { color: var(--gold); }
+
+    /* MILESTONES */
+    .milestone {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .milestone:last-child { border-bottom: none; }
+
+    .milestone-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .milestone-icon.done {
+      background: rgba(16,185,129,0.15);
+      border: 1px solid rgba(16,185,129,0.3);
+    }
+
+    .milestone-icon.pending {
+      background: rgba(59,130,246,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+    }
+
+    .milestone-text h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.1rem;
+    }
+
+    .milestone-text p {
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+
+    /* EXPORT BTN */
+    .export-btn {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      color: var(--blue-bright);
+      font-size: 0.8rem;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+
+    .export-btn:hover { background: var(--blue-glow); }
+
+    @media (max-width: 768px) {
+      .charts-row { grid-template-columns: 1fr; }
+      .bottom-row { grid-template-columns: 1fr; }
+      .top-metrics { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="logo">
+      <div class="logo-icon">⛓️</div>
+      <span class="logo-text">CareChain<span>NFT</span></span>
+    </a>
+    <div class="nav-right">
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        Live Data
+      </div>
+      <span class="nav-badge">Investor Dashboard</span>
+    </div>
+  </nav>
+
+  <main>
+
+    <div class="page-header">
+      <div>
+        <h1>Platform Overview</h1>
+        <p>Real-time metrics across all CareChain NFT institutions</p>
+      </div>
+      <div class="last-updated">
+        <div style="color: var(--gray-light); margin-bottom: 0.25rem;" id="currentDate"></div>
+        <div>Last updated: <span id="lastUpdated"></span></div>
+      </div>
+    </div>
+
+    <!-- TOP METRICS -->
+    <div class="top-metrics">
+      <div class="metric-card revenue">
+        <div class="metric-label">Monthly Recurring Revenue</div>
+        <div class="metric-value green" id="totalMRR">$0</div>
+        <div class="metric-change" id="mrrChange">—</div>
+      </div>
+      <div class="metric-card members">
+        <div class="metric-label">Total Active Members</div>
+        <div class="metric-value blue" id="totalMembers">0</div>
+        <div class="metric-change" id="membersChange">—</div>
+      </div>
+      <div class="metric-card institutions">
+        <div class="metric-label">Active Institutions</div>
+        <div class="metric-value purple" id="totalInstitutions">0</div>
+        <div class="metric-change">Pilot phase</div>
+      </div>
+      <div class="metric-card records">
+        <div class="metric-label">Health Record NFTs</div>
+        <div class="metric-value gold" id="totalRecords">0</div>
+        <div class="metric-change">Patient credentials</div>
+      </div>
+      <div class="metric-card nfts">
+        <div class="metric-label">Total NFTs Minted</div>
+        <div class="metric-value blue" id="totalNFTs">0</div>
+        <div class="metric-change">All time</div>
+      </div>
+      <div class="metric-card renewal">
+        <div class="metric-label">Renewal Rate</div>
+        <div class="metric-value green" id="renewalRate">0%</div>
+        <div class="metric-change">30-day cycle</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+
+      <!-- REVENUE CHART -->
+      <div class="chart-card">
+        <div class="chart-title">Monthly Revenue Growth</div>
+        <div class="bar-chart" id="revenueChart"></div>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background: var(--green);"></span>Revenue</span>
+          <span><span class="legend-dot" style="background: var(--blue);"></span>New Members</span>
+        </div>
+      </div>
+
+      <!-- TIER BREAKDOWN -->
+      <div class="chart-card">
+        <div class="chart-title">Membership Tier Breakdown</div>
+        <div class="donut-container">
+          <div class="donut">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="54" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="16"/>
+              <circle cx="70" cy="70" r="54" fill="none" stroke="#60A5FA" stroke-width="16"
+                stroke-dasharray="339.3" stroke-dashoffset="254.5" id="diamondArc"/>
+              <circle cx="70" cy="70" r="54" fill="none" stroke="#F59E0B" stroke-width="16"
+                stroke-dasharray="339.3" stroke-dashoffset="84.8" id="goldArc"/>
+              <circle cx="70" cy="70" r="54" fill="none" stroke="#9CA3AF" stroke-width="16"
+                stroke-dasharray="339.3" stroke-dashoffset="0" id="silverArc"/>
+            </svg>
+            <div class="donut-center">
+              <div class="donut-center-value" id="donutTotal">0</div>
+              <div class="donut-center-label">Members</div>
+            </div>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INSTITUTIONS TABLE -->
+    <div class="institutions-section">
+      <div class="section-header">
+        <span class="section-title">Institution Performance</span>
+        <button class="export-btn" onclick="exportData()">↓ Export CSV</button>
+      </div>
+      <table class="inst-table">
+        <thead>
+          <tr>
+            <th>Institution</th>
+            <th>Status</th>
+            <th>Members</th>
+            <th>💎 Diamond</th>
+            <th>🥇 Gold</th>
+            <th>🥈 Silver</th>
+            <th>MRR</th>
+            <th>Revenue Track</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody id="institutionRows"></tbody>
+      </table>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+
+      <!-- PLATFORM HEALTH -->
+      <div class="bottom-card">
+        <div class="bottom-card-title">Platform Health</div>
+        <div class="stat-row">
+          <span class="stat-label">Total Revenue (All Time)</span>
+          <span class="stat-value green" id="totalRevenue">$0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Avg Revenue Per Member</span>
+          <span class="stat-value green" id="avgRevenue">$0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total NFTs Burned</span>
+          <span class="stat-value" id="totalBurned">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total NFTs Reissued</span>
+          <span class="stat-value blue" id="totalReissued">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Health Record NFTs Issued</span>
+          <span class="stat-value gold" id="recordNFTs">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Platform Uptime</span>
+          <span class="stat-value green">100%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Blockchain Network</span>
+          <span class="stat-value blue">XRPL Testnet</span>
+        </div>
+      </div>
+
+      <!-- MILESTONES -->
+      <div class="bottom-card">
+        <div class="bottom-card-title">Platform Milestones</div>
+        <div class="milestone">
+          <div class="milestone-icon done">✓</div>
+          <div class="milestone-text">
+            <h4>Core Platform Built</h4>
+            <p>NFT minting, verification, and renewal engine complete</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-icon done">✓</div>
+          <div class="milestone-text">
+            <h4>Admin Portal Live</h4>
+            <p>carechainnft.com — enrollment and metrics dashboard</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-icon done">✓</div>
+          <div class="milestone-text">
+            <h4>Health Record NFT</h4>
+            <p>Patient sovereignty layer — permanent on-chain credential</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-icon pending">→</div>
+          <div class="milestone-text">
+            <h4>Pilot Program Launch</h4>
+            <p>First clinic onboarding — Houston, TX target market</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-icon pending">→</div>
+          <div class="milestone-text">
+            <h4>Payment Integration</h4>
+            <p>Stripe subscription billing — automated renewal cycle</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-icon pending">→</div>
+          <div class="milestone-text">
+            <h4>EHR Integration</h4>
+            <p>Epic and MyChart API connection — Phase 3</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-icon pending">→</div>
+          <div class="milestone-text">
+            <h4>Series A Funding</h4>
+            <p>Target: post pilot program validation</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // ============================================================
+    // CareChain NFT — Investor Dashboard
+    // Platform-wide metrics across all institutions
+    // In production this pulls from the CareChain backend API
+    // For demo purposes we use realistic simulated data
+    // ============================================================
+
+    // Demo platform data
+    // In production this is pulled from the backend database
+    const platformData = {
+      institutions: [
+        {
+          id: "PILOT_001",
+          name: "CareChain Pilot Clinic",
+          location: "Houston, TX",
+          status: "pilot",
+          joinDate: "2026-03-31",
+          members: { diamond: 0, gold: 1, silver: 0 },
+          metrics: {
+            mrr: 199,
+            totalRevenue: 199,
+            totalMinted: 1,
+            totalBurned: 0,
+            totalReissued: 0,
+            recordNFTs: 1
+          }
+        }
+      ],
+      monthlyData: [
+        { month: "Oct", revenue: 0,   members: 0 },
+        { month: "Nov", revenue: 0,   members: 0 },
+        { month: "Dec", revenue: 0,   members: 0 },
+        { month: "Jan", revenue: 0,   members: 0 },
+        { month: "Feb", revenue: 0,   members: 0 },
+        { month: "Mar", revenue: 199, members: 1 },
+        { month: "Apr", revenue: 199, members: 1 }
+      ]
+    }
+
+    // ---- INITIALIZE DASHBOARD ---------------------------
+    function initDashboard() {
+      const now = new Date()
+
+      document.getElementById("currentDate").textContent =
+        now.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        })
+
+      document.getElementById("lastUpdated").textContent =
+        now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+
+      calculateMetrics()
+      renderRevenueChart()
+      renderTierBreakdown()
+      renderInstitutionTable()
+    }
+
+    // ---- CALCULATE PLATFORM METRICS ---------------------
+    function calculateMetrics() {
+      let totalMRR = 0
+      let totalMembers = 0
+      let totalDiamond = 0
+      let totalGold = 0
+      let totalSilver = 0
+      let totalRevenue = 0
+      let totalMinted = 0
+      let totalBurned = 0
+      let totalReissued = 0
+      let totalRecordNFTs = 0
+
+      platformData.institutions.forEach(inst => {
+        totalMRR += inst.metrics.mrr
+        totalMembers += inst.members.diamond + inst.members.gold + inst.members.silver
+        totalDiamond += inst.members.diamond
+        totalGold += inst.members.gold
+        totalSilver += inst.members.silver
+        totalRevenue += inst.metrics.totalRevenue
+        totalMinted += inst.metrics.totalMinted
+        totalBurned += inst.metrics.totalBurned
+        totalReissued += inst.metrics.totalReissued
+        totalRecordNFTs += inst.metrics.recordNFTs
+      })
+
+      const renewalRate = totalMinted > 0
+        ? Math.round((totalReissued / totalMinted) * 100)
+        : 0
+
+      const avgRevenue = totalMembers > 0
+        ? Math.round(totalRevenue / totalMembers)
+        : 0
+
+      // Update DOM
+      document.getElementById("totalMRR").textContent = "$" + totalMRR.toLocaleString()
+      document.getElementById("totalMembers").textContent = totalMembers
+      document.getElementById("totalInstitutions").textContent = platformData.institutions.length
+      document.getElementById("totalRecords").textContent = totalRecordNFTs
+      document.getElementById("totalNFTs").textContent = totalMinted
+      document.getElementById("renewalRate").textContent = renewalRate + "%"
+      document.getElementById("totalRevenue").textContent = "$" + totalRevenue.toLocaleString()
+      document.getElementById("avgRevenue").textContent = "$" + avgRevenue
+      document.getElementById("totalBurned").textContent = totalBurned
+      document.getElementById("totalReissued").textContent = totalReissued
+      document.getElementById("recordNFTs").textContent = totalRecordNFTs
+      document.getElementById("donutTotal").textContent = totalMembers
+
+      // Store tier totals for donut chart
+      window.tierTotals = { diamond: totalDiamond, gold: totalGold, silver: totalSilver, total: totalMembers }
+    }
+
+    // ---- RENDER REVENUE CHART ---------------------------
+    function renderRevenueChart() {
+      const data = platformData.monthlyData
+      const maxRevenue = Math.max(...data.map(d => d.revenue), 1)
+      const maxMembers = Math.max(...data.map(d => d.members), 1)
+
+      const chart = document.getElementById("revenueChart")
+      chart.innerHTML = data.map(d => `
+        <div class="bar-group">
+          <div class="bar revenue" style="height: ${(d.revenue / maxRevenue) * 120}px"
+               title="$${d.revenue}"></div>
+          <div class="bar members" style="height: ${(d.members / maxMembers) * 40}px"
+               title="${d.members} members"></div>
+          <div class="bar-label">${d.month}</div>
+        </div>
+      `).join("")
+    }
+
+    // ---- RENDER TIER BREAKDOWN DONUT --------------------
+    function renderTierBreakdown() {
+      const { diamond, gold, silver, total } = window.tierTotals || { diamond: 0, gold: 1, silver: 0, total: 1 }
+      const t = total || 1
+
+      const tiers = [
+        { name: "Diamond", value: diamond, color: "#60A5FA", pct: Math.round((diamond/t)*100) },
+        { name: "Gold",    value: gold,    color: "#F59E0B", pct: Math.round((gold/t)*100) },
+        { name: "Silver",  value: silver,  color: "#9CA3AF", pct: Math.round((silver/t)*100) }
+      ]
+
+      const legend = document.getElementById("donutLegend")
+      legend.innerHTML = tiers.map(tier => `
+        <div class="donut-legend-item">
+          <div class="donut-legend-left">
+            <div class="donut-color" style="background: ${tier.color}"></div>
+            <span>${tier.name}</span>
+          </div>
+          <span style="color: var(--gray-light);">${tier.value} (${tier.pct}%)</span>
+        </div>
+      `).join("")
+    }
+
+    // ---- RENDER INSTITUTION TABLE -----------------------
+    function renderInstitutionTable() {
+      const maxMRR = Math.max(...platformData.institutions.map(i => i.metrics.mrr), 1)
+      const tbody = document.getElementById("institutionRows")
+
+      tbody.innerHTML = platformData.institutions.map(inst => {
+        const totalMembers = inst.members.diamond + inst.members.gold + inst.members.silver
+        const pct = (inst.metrics.mrr / maxMRR) * 100
+
+        return `
+          <tr>
+            <td>
+              <div class="inst-name">${inst.name}</div>
+              <div class="inst-location">${inst.location}</div>
+            </td>
+            <td>
+              <span class="status-pill status-${inst.status}">
+                ${inst.status.toUpperCase()}
+              </span>
+            </td>
+            <td style="font-weight: 600;">${totalMembers}</td>
+            <td style="color: var(--diamond);">${inst.members.diamond}</td>
+            <td style="color: var(--gold);">${inst.members.gold}</td>
+            <td style="color: var(--silver);">${inst.members.silver}</td>
+            <td style="color: var(--green); font-weight: 600;">
+              $${inst.metrics.mrr.toLocaleString()}
+            </td>
+            <td>
+              <div class="revenue-bar">
+                <div class="revenue-track">
+                  <div class="revenue-fill" style="width: ${pct}%"></div>
+                </div>
+                <span style="font-size: 0.75rem; color: var(--gray); min-width: 30px;">
+                  ${Math.round(pct)}%
+                </span>
+              </div>
+            </td>
+            <td style="color: var(--gray); font-size: 0.8rem;">${inst.joinDate}</td>
+          </tr>
+        `
+      }).join("")
+    }
+
+    // ---- EXPORT DATA ------------------------------------
+    function exportData() {
+      const rows = [
+        ["Institution", "Location", "Status", "Members", "Diamond", "Gold", "Silver", "MRR", "Total Revenue", "Joined"],
+        ...platformData.institutions.map(inst => [
+          inst.name,
+          inst.location,
+          inst.status,
+          inst.members.diamond + inst.members.gold + inst.members.silver,
+          inst.members.diamond,
+          inst.members.gold,
+          inst.members.silver,
+          inst.metrics.mrr,
+          inst.metrics.totalRevenue,
+          inst.joinDate
+        ])
+      ]
+
+      const csv = rows.map(r => r.join(",")).join("\n")
+      const blob = new Blob([csv], { type: "text/csv" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `carechain-metrics-${new Date().toISOString().split("T")[0]}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+
+    // Initialize on load
+    initDashboard()
+
+    // Auto refresh every 60 seconds
+    setInterval(() => {
+      document.getElementById("lastUpdated").textContent =
+        new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    }, 60000)
+  </script>
+
+</body>
+</html>
