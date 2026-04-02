@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareChain NFT — Membership Verification</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060A12;
+      --surface: #0C1220;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(59,130,246,0.3);
+      --blue: #3B82F6;
+      --blue-bright: #60A5FA;
+      --blue-glow: rgba(59,130,246,0.15);
+      --white: #FFFFFF;
+      --gray: rgba(255,255,255,0.5);
+      --gray-light: rgba(255,255,255,0.7);
+      --green: #10B981;
+      --red: #EF4444;
+      --gold: #F59E0B;
+      --diamond: #60A5FA;
+      --silver: #9CA3AF;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(6, 10, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+    }
+
+    .logo-text span { color: var(--blue); }
+
+    .nav-badge {
+      font-size: 0.75rem;
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+    }
+
+    /* MAIN */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 2rem 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .verify-container {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .verify-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .verify-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .verify-header p {
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    /* SEARCH BOX */
+    .search-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-label {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .search-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--blue);
+    }
+
+    .search-input::placeholder {
+      color: var(--gray);
+      font-size: 0.85rem;
+    }
+
+    .verify-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .verify-btn:hover { opacity: 0.85; }
+
+    .verify-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-top: 0.75rem;
+    }
+
+    /* LOADING */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* RESULT CARDS */
+    .result {
+      display: none;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* SUCCESS RESULT */
+    .result-success {
+      border: 1px solid rgba(16,185,129,0.3);
+      background: var(--surface);
+    }
+
+    .result-header {
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .result-header.success {
+      background: rgba(16,185,129,0.1);
+      border-bottom: 1px solid rgba(16,185,129,0.2);
+    }
+
+    .result-header.failed {
+      background: rgba(239,68,68,0.1);
+      border-bottom: 1px solid rgba(239,68,68,0.2);
+    }
+
+    .status-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .status-icon.success {
+      background: rgba(16,185,129,0.2);
+    }
+
+    .status-icon.failed {
+      background: rgba(239,68,68,0.2);
+    }
+
+    .status-text h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .status-text h2.success { color: var(--green); }
+    .status-text h2.failed { color: var(--red); }
+
+    .status-text p {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.2rem;
+    }
+
+    .result-body {
+      padding: 1.5rem 2rem;
+    }
+
+    /* TIER DISPLAY */
+    .tier-display {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--surface2);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tier-icon {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+
+    .tier-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .tier-info h3.diamond { color: var(--diamond); }
+    .tier-info h3.gold { color: var(--gold); }
+    .tier-info h3.silver { color: var(--silver); }
+
+    .tier-info p {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* BENEFITS LIST */
+    .benefits-title {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--gray-light);
+      padding: 0.5rem;
+      background: var(--surface2);
+      border-radius: 8px;
+    }
+
+    .benefit-check {
+      color: var(--green);
+      font-size: 0.8rem;
+      margin-top: 0.1rem;
+      flex-shrink: 0;
+    }
+
+    /* WALLET INFO */
+    .wallet-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .wallet-info-label {
+      font-size: 0.75rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .wallet-info-value {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--gray-light);
+    }
+
+    /* AUDIT LOG */
+    .audit-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .audit-title {
+      font-size: 0.8rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .audit-log {
+      background: var(--surface2);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .audit-entry {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+
+    .audit-entry:last-child {
+      border-bottom: none;
+    }
+
+    .audit-entry.header {
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.7rem;
+    }
+
+    .audit-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .audit-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .audit-dot.failed {
+      background: var(--red);
+    }
+
+    /* RESET BTN */
+    .reset-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      margin-top: 1rem;
+      transition: all 0.2s;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--blue);
+      color: var(--white);
+    }
+
+    /* FAILED RESULT */
+    .result-failed {
+      border: 1px solid rgba(239,68,68,0.3);
+      background: var(--surface);
+    }
+
+    .failed-body {
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+
+    .failed-body p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .enroll-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--gray);
+      font-size: 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 600px) {
+      .benefits-grid { grid-template-columns: 1fr; }
+      .audit-entry { grid-template-columns: 1fr 1fr; }
+      .search-row { flex-direction: column; }
+      .verify-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="logo">
+      <div class="logo-icon">⛓️</div>
+      <span class="logo-text">CareChain<span>NFT</span></span>
+    </a>
+    <span class="nav-badge">Membership Verification</span>
+  </nav>
+
+  <main>
+    <div class="verify-container">
+
+      <!-- HEADER -->
+      <div class="verify-header">
+        <h1>Verify Membership</h1>
+        <p>Enter the patient's wallet address to confirm their active membership and benefits</p>
+      </div>
+
+      <!-- SEARCH BOX -->
+      <div class="search-box" id="searchBox">
+        <span class="search-label">Patient Wallet Address</span>
+        <div class="search-row">
+          <input
+            type="text"
+            class="search-input"
+            id="walletInput"
+            placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          />
+          <button class="verify-btn" id="verifyBtn" onclick="handleVerify()">
+            Verify
+          </button>
+        </div>
+        <p class="hint">
+          💡 Tip: Ask the patient to open their Xaman wallet and show their wallet address or QR code
+        </p>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading" id="loadingState">
+        <div class="spinner"></div>
+        <p>Checking membership on the XRP Ledger...</p>
+      </div>
+
+      <!-- SUCCESS RESULT -->
+      <div class="result result-success" id="resultSuccess">
+        <div class="result-header success">
+          <div class="status-icon success">✅</div>
+          <div class="status-text">
+            <h2 class="success">Active Membership Confirmed</h2>
+            <p>This patient has a valid CareChain NFT membership</p>
+          </div>
+        </div>
+        <div class="result-body">
+
+          <!-- TIER -->
+          <div class="tier-display">
+            <div class="tier-icon" id="resultTierIcon">💎</div>
+            <div class="tier-info">
+              <h3 id="resultTierName" class="diamond">Diamond Tier</h3>
+              <p>CareChain NFT Membership — Active</p>
+            </div>
+          </div>
+
+          <!-- WALLET INFO -->
+          <div class="wallet-info">
+            <span class="wallet-info-label">Wallet Address</span>
+            <span class="wallet-info-value" id="resultWallet">—</span>
+          </div>
+          <div class="wallet-info">
+            <span class="wallet-info-label">NFT Token ID</span>
+            <span class="wallet-info-value" id="resultNFTID">—</span>
+          </div>
+          <div class="wallet-info">
+            <span class="wallet-info-label">Verified At</span>
+            <span class="wallet-info-value" id="resultTime">—</span>
+          </div>
+
+          <!-- BENEFITS -->
+          <p class="benefits-title">Benefits for This Visit</p>
+          <div class="benefits-grid" id="benefitsGrid"></div>
+
+          <!-- AUDIT LOG -->
+          <div class="audit-section">
+            <p class="audit-title">Verification Audit Log</p>
+            <div class="audit-log">
+              <div class="audit-entry header">
+                <span>Time</span>
+                <span>Tier</span>
+                <span>Wallet</span>
+                <span>Status</span>
+              </div>
+              <div id="auditEntries"></div>
+            </div>
+          </div>
+
+          <button class="reset-btn" onclick="resetVerification()">
+            ↩ Verify Another Patient
+          </button>
+        </div>
+      </div>
+
+      <!-- FAILED RESULT -->
+      <div class="result result-failed" id="resultFailed">
+        <div class="result-header failed">
+          <div class="status-icon failed">❌</div>
+          <div class="status-text">
+            <h2 class="failed">No Active Membership Found</h2>
+            <p>This wallet does not have a valid CareChain NFT membership</p>
+          </div>
+        </div>
+        <div class="failed-body">
+          <p>
+            This patient is not currently enrolled in the CareChain NFT
+            membership program. Please direct them to the enrollment desk
+            or have them speak with a staff member.
+          </p>
+          <a href="admin.html" class="enroll-btn">
+            Go to Enrollment →
+          </a>
+          <br><br>
+          <button class="reset-btn" onclick="resetVerification()">
+            ↩ Try Another Wallet
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    CareChain NFT — Powered by the XRP Ledger &nbsp;⛓️
+  </footer>
+
+  <script>
+    // ============================================================
+    // CareChain NFT — Membership Verification Interface
+    // This page is used by front desk staff to verify a patient's
+    // membership status at point of care.
+    //
+    // In production this connects to the CareChain backend API
+    // which runs the verify-membership.js Node.js script.
+    // For the pilot demo we simulate verification locally.
+    // ============================================================
+
+    // Audit log stored in memory during the session
+    // In production this writes to the institution's
+    // secure backend database
+    let auditLog = []
+
+    // Demo membership data — mirrors what the XRPL returns
+    // In production this comes from the blockchain directly
+    const DEMO_MEMBERSHIPS = {
+      "rDYGWXBu9FCV9Cw3GvMqQJYThmRB2pnNo": {
+        tier: "gold",
+        tierName: "Gold",
+        tierIcon: "🥇",
+        nftokenID: "00010000025F179DA6A7C446B8217A9D02BC41AA2BEDB6190E1900C300F62027",
+        benefits: [
+          "15% discount on all services",
+          "Next-day appointments",
+          "Priority walk-in status",
+          "2 telehealth visits/month",
+          "Wellness recommendations",
+          "Complimentary screenings",
+          "Specialist referral priority",
+          "Patient portal access"
+        ]
+      },
+      "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe": {
+        tier: "diamond",
+        tierName: "Diamond",
+        tierIcon: "💎",
+        nftokenID: "00010000025F179DA6A7C446B8217A9D02BC41AA2BEDB619C9678DBF00F62024",
+        benefits: [
+          "25% discount on all services",
+          "Same-day appointments",
+          "Direct provider cell access",
+          "Unlimited telehealth visits",
+          "Dedicated care coordinator",
+          "Free annual wellness exam",
+          "Free basic lab panels",
+          "After-hours urgent access",
+          "VIP waiting room priority",
+          "Personalized prevention plan"
+        ]
+      }
+    }
+
+    // ---- HANDLE VERIFY ----------------------------------
+    async function handleVerify() {
+      const wallet = document.getElementById("walletInput").value.trim()
+
+      if (!wallet || wallet.length < 20) {
+        document.getElementById("walletInput").style.borderColor = "#ef4444"
+        setTimeout(() => {
+          document.getElementById("walletInput").style.borderColor = ""
+        }, 1500)
+        return
+      }
+
+      // Show loading state
+      showLoading()
+
+      // Simulate blockchain lookup delay
+      // In production this calls the CareChain verification API
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      // Check if wallet has a membership
+      const membership = DEMO_MEMBERSHIPS[wallet]
+
+      if (membership) {
+        showSuccess(wallet, membership)
+      } else {
+        showFailed(wallet)
+      }
+    }
+
+    // ---- SHOW LOADING -----------------------------------
+    function showLoading() {
+      document.getElementById("searchBox").style.display = "none"
+      document.getElementById("loadingState").style.display = "block"
+      document.getElementById("resultSuccess").style.display = "none"
+      document.getElementById("resultFailed").style.display = "none"
+    }
+
+    // ---- SHOW SUCCESS -----------------------------------
+    function showSuccess(wallet, membership) {
+      const now = new Date()
+      const timeStr = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      })
+      const dateStr = now.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      })
+
+      // Update tier display
+      document.getElementById("resultTierIcon").textContent = membership.tierIcon
+      const tierName = document.getElementById("resultTierName")
+      tierName.textContent = membership.tierName + " Tier"
+      tierName.className = membership.tier
+
+      // Update wallet info
+      document.getElementById("resultWallet").textContent =
+        wallet.slice(0,8) + "..." + wallet.slice(-6)
+      document.getElementById("resultNFTID").textContent =
+        membership.nftokenID.slice(0,10) + "..." + membership.nftokenID.slice(-6)
+      document.getElementById("resultTime").textContent =
+        dateStr + " at " + timeStr
+
+      // Render benefits
+      const grid = document.getElementById("benefitsGrid")
+      grid.innerHTML = membership.benefits.map(b => `
+        <div class="benefit-item">
+          <span class="benefit-check">✓</span>
+          <span>${b}</span>
+        </div>
+      `).join("")
+
+      // Add to audit log
+      addAuditEntry(wallet, membership.tier, timeStr, true)
+
+      // Show result
+      document.getElementById("loadingState").style.display = "none"
+      document.getElementById("resultSuccess").style.display = "block"
+    }
+
+    // ---- SHOW FAILED ------------------------------------
+    function showFailed(wallet) {
+      const now = new Date()
+      const timeStr = now.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      })
+
+      // Add failed entry to audit log
+      addAuditEntry(wallet, "—", timeStr, false)
+
+      document.getElementById("loadingState").style.display = "none"
+      document.getElementById("resultFailed").style.display = "block"
+    }
+
+    // ---- ADD AUDIT ENTRY --------------------------------
+    // Every verification — success or fail — gets logged
+    // This creates the audit trail for HIPAA compliance
+    // and for the institution's records
+    function addAuditEntry(wallet, tier, time, success) {
+      auditLog.unshift({ wallet, tier, time, success })
+
+      const container = document.getElementById("auditEntries")
+      container.innerHTML = auditLog.slice(0, 5).map(entry => `
+        <div class="audit-entry">
+          <span style="color: var(--gray-light);">${entry.time}</span>
+          <span style="color: var(--gray-light);">${entry.tier}</span>
+          <span style="font-family: monospace; font-size: 0.75rem; color: var(--gray);">
+            ${entry.wallet.slice(0,6)}...${entry.wallet.slice(-4)}
+          </span>
+          <span class="audit-status">
+            <span class="audit-dot ${entry.success ? '' : 'failed'}"></span>
+            ${entry.success ? 'Verified' : 'Not Found'}
+          </span>
+        </div>
+      `).join("")
+    }
+
+    // ---- RESET ------------------------------------------
+    function resetVerification() {
+      document.getElementById("walletInput").value = ""
+      document.getElementById("resultSuccess").style.display = "none"
+      document.getElementById("resultFailed").style.display = "none"
+      document.getElementById("searchBox").style.display = "block"
+      document.getElementById("walletInput").focus()
+    }
+
+    // Allow Enter key to trigger verification
+    document.getElementById("walletInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleVerify()
+    })
+  </script>
+
+</body>
+</html>
