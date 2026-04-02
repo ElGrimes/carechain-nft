@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareChain NFT — Patient Onboarding</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060A12;
+      --surface: #0C1220;
+      --surface2: #111827;
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(59,130,246,0.3);
+      --blue: #3B82F6;
+      --blue-bright: #60A5FA;
+      --blue-glow: rgba(59,130,246,0.15);
+      --white: #FFFFFF;
+      --gray: rgba(255,255,255,0.5);
+      --gray-light: rgba(255,255,255,0.7);
+      --green: #10B981;
+      --gold: #F59E0B;
+      --diamond: #60A5FA;
+      --silver: #9CA3AF;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--white);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.1rem 2.5rem;
+      background: rgba(6, 10, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+    }
+
+    .logo-text span { color: var(--blue); }
+
+    .nav-badge {
+      font-size: 0.75rem;
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HEADER */
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .welcome-badge {
+      display: inline-block;
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .page-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .page-header p {
+      color: var(--gray);
+      font-size: 1rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* TIER BANNER */
+    .tier-banner {
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tier-banner.diamond {
+      background: rgba(96,165,250,0.1);
+      border: 1px solid rgba(96,165,250,0.3);
+    }
+
+    .tier-banner.gold {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+
+    .tier-banner.silver {
+      background: rgba(156,163,175,0.1);
+      border: 1px solid rgba(156,163,175,0.3);
+    }
+
+    .tier-banner-icon { font-size: 2rem; }
+
+    .tier-banner-text h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .tier-banner-text h3.diamond { color: var(--diamond); }
+    .tier-banner-text h3.gold { color: var(--gold); }
+    .tier-banner-text h3.silver { color: var(--silver); }
+
+    .tier-banner-text p {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* STEPS */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .step.active {
+      border-color: var(--border-bright);
+    }
+
+    .step.completed {
+      border-color: rgba(16,185,129,0.3);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--gray);
+      transition: all 0.3s;
+    }
+
+    .step.active .step-number {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: white;
+    }
+
+    .step.completed .step-number {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    .step-title {
+      flex: 1;
+    }
+
+    .step-title h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .step-title p {
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-top: 0.1rem;
+    }
+
+    .step-status {
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    .step.completed .step-status {
+      color: var(--green);
+    }
+
+    .step-body {
+      padding: 0 1.5rem 1.5rem;
+      display: none;
+    }
+
+    .step.active .step-body {
+      display: block;
+    }
+
+    .step-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 1.25rem;
+    }
+
+    .step-instruction {
+      color: var(--gray-light);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+
+    /* APP DOWNLOAD BUTTONS */
+    .app-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .app-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem 1.25rem;
+      text-decoration: none;
+      color: var(--white);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: border-color 0.2s;
+    }
+
+    .app-btn:hover {
+      border-color: var(--blue);
+    }
+
+    .app-btn-icon { font-size: 1.3rem; }
+
+    /* INFO BOX */
+    .info-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      color: var(--gray-light);
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .info-box.blue {
+      background: var(--blue-glow);
+      border-color: var(--border-bright);
+      color: var(--blue-bright);
+    }
+
+    .info-box.green {
+      background: rgba(16,185,129,0.1);
+      border-color: rgba(16,185,129,0.3);
+      color: #6ee7b7;
+    }
+
+    /* SUBSTEPS */
+    .substeps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .substeps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--gray-light);
+    }
+
+    .substep-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    /* WALLET DISPLAY */
+    .wallet-display {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .wallet-display label {
+      font-size: 0.75rem;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .wallet-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .wallet-addr-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--white);
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .copy-btn {
+      background: var(--blue-glow);
+      border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      color: var(--blue-bright);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* NEXT BUTTON */
+    .next-btn {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .next-btn:hover { opacity: 0.85; }
+
+    /* COMPLETION */
+    .completion {
+      display: none;
+      text-align: center;
+      background: var(--surface);
+      border: 1px solid rgba(16,185,129,0.3);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .completion-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .completion h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+    }
+
+    .completion p {
+      color: var(--gray);
+      font-size: 0.95rem;
+      max-width: 400px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .completion-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.85rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .action-btn.outline {
+      background: transparent;
+      border: 1px solid var(--border-bright);
+      color: var(--blue-bright);
+    }
+
+    /* HELP SECTION */
+    .help-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .help-section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .help-section p {
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .help-contact {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .help-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 1.2rem;
+      color: var(--gray-light);
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.6rem; }
+      .app-buttons { flex-direction: column; }
+      .completion-actions { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="logo">
+      <div class="logo-icon">⛓️</div>
+      <span class="logo-text">CareChain<span>NFT</span></span>
+    </a>
+    <span class="nav-badge">Patient Onboarding</span>
+  </nav>
+
+  <main>
+
+    <!-- HEADER -->
+    <div class="page-header">
+      <div class="welcome-badge">🎉 Welcome to CareChain NFT</div>
+      <h1>Let's Get You Set Up</h1>
+      <p>
+        Follow these simple steps to activate your membership and start
+        enjoying your healthcare benefits today.
+      </p>
+    </div>
+
+    <!-- TIER BANNER -->
+    <div class="tier-banner gold" id="tierBanner">
+      <div class="tier-banner-icon">🥇</div>
+      <div class="tier-banner-text">
+        <h3 class="gold" id="tierBannerName">Gold Tier Membership</h3>
+        <p>Your membership is ready to be activated</p>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps" id="stepsContainer">
+
+      <!-- STEP 1 -->
+      <div class="step active" id="step1">
+        <div class="step-header" onclick="toggleStep(1)">
+          <div class="step-number">1</div>
+          <div class="step-title">
+            <h3>Download the Xaman Wallet</h3>
+            <p>Your secure digital wallet for storing your membership NFT</p>
+          </div>
+          <span class="step-status" id="step1Status">Current</span>
+        </div>
+        <div class="step-body">
+          <div class="step-divider"></div>
+          <p class="step-instruction">
+            Xaman (formerly XUMM) is a free, secure digital wallet app that
+            stores your CareChain NFT membership credential. Think of it like
+            a digital version of your insurance card — but more secure and
+            always in your pocket.
+          </p>
+          <div class="app-buttons">
+            <a href="https://apps.apple.com/app/xumm/id1492302343"
+               target="_blank" class="app-btn">
+              <span class="app-btn-icon">🍎</span>
+              Download for iPhone
+            </a>
+<a href="https://play.google.com/store/search?q=xaman&c=apps"
+               target="_blank" class="app-btn">
+              <span class="app-btn-icon">🤖</span>
+              Download for Android
+            </a>
+            💡 Xaman is completely free to download and use. You do not need
+            to purchase any cryptocurrency to set up your wallet.
+          </div>
+          <button class="next-btn" onclick="completeStep(1)">
+            I've Downloaded Xaman →
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step" id="step2">
+        <div class="step-header" onclick="toggleStep(2)">
+          <div class="step-number">2</div>
+          <div class="step-title">
+            <h3>Create Your Wallet Account</h3>
+            <p>Set up your personal secure wallet in Xaman</p>
+          </div>
+          <span class="step-status" id="step2Status">Upcoming</span>
+        </div>
+        <div class="step-body">
+          <div class="step-divider"></div>
+          <p class="step-instruction">
+            Open the Xaman app and create a new account. Follow these steps carefully:
+          </p>
+          <ul class="substeps">
+            <li>
+              <span class="substep-num">1</span>
+              Open Xaman and tap <strong>"Create a new account"</strong>
+            </li>
+            <li>
+              <span class="substep-num">2</span>
+              Read and accept the terms of service
+            </li>
+            <li>
+              <span class="substep-num">3</span>
+              You will be shown a <strong>Secret Family Seed</strong> —
+              a series of words. Write these down on paper and store them
+              somewhere safe. This is your backup key.
+            </li>
+            <li>
+              <span class="substep-num">4</span>
+              Confirm your seed words when prompted
+            </li>
+            <li>
+              <span class="substep-num">5</span>
+              Set up your PIN or biometric security
+            </li>
+            <li>
+              <span class="substep-num">6</span>
+              Your wallet is now created
+            </li>
+          </ul>
+          <div class="info-box">
+            ⚠️ <strong>Important:</strong> Never share your seed words with
+            anyone — including CareChain staff. Your seed words are the only
+            way to recover your wallet if you lose your phone. Store them
+            safely offline.
+          </div>
+          <button class="next-btn" onclick="completeStep(2)">
+            I've Created My Wallet →
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step" id="step3">
+        <div class="step-header" onclick="toggleStep(3)">
+          <div class="step-number">3</div>
+          <div class="step-title">
+            <h3>Share Your Wallet Address</h3>
+            <p>Give your address to the clinic so we can send your membership NFT</p>
+          </div>
+          <span class="step-status" id="step3Status">Upcoming</span>
+        </div>
+        <div class="step-body">
+          <div class="step-divider"></div>
+          <p class="step-instruction">
+            Your wallet address is like your email address for receiving your
+            membership NFT. It is safe to share — it only allows people to
+            send things to you, never to take anything from you.
+          </p>
+          <ul class="substeps">
+            <li>
+              <span class="substep-num">1</span>
+              Open Xaman and tap your account at the top of the screen
+            </li>
+            <li>
+              <span class="substep-num">2</span>
+              Tap <strong>"Copy address"</strong> or show the QR code
+            </li>
+            <li>
+              <span class="substep-num">3</span>
+              Share your address or QR code with the clinic staff
+            </li>
+          </ul>
+          <div class="info-box green">
+            ✅ Your wallet address starts with the letter <strong>"r"</strong>
+            and is about 34 characters long. Example: rXXXX...XXXX
+          </div>
+          <button class="next-btn" onclick="completeStep(3)">
+            I've Shared My Address →
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step" id="step4">
+        <div class="step-header" onclick="toggleStep(4)">
+          <div class="step-number">4</div>
+          <div class="step-title">
+            <h3>Accept Your Membership NFT</h3>
+            <p>Receive your digital membership credential in Xaman</p>
+          </div>
+          <span class="step-status" id="step4Status">Upcoming</span>
+        </div>
+        <div class="step-body">
+          <div class="step-divider"></div>
+          <p class="step-instruction">
+            Once the clinic sends your membership NFT you will receive a
+            notification in Xaman. Follow these steps to accept it:
+          </p>
+          <ul class="substeps">
+            <li>
+              <span class="substep-num">1</span>
+              Open Xaman — you will see a pending request notification
+            </li>
+            <li>
+              <span class="substep-num">2</span>
+              Tap the notification to open the request
+            </li>
+            <li>
+              <span class="substep-num">3</span>
+              Review the details — you will see your membership tier
+            </li>
+            <li>
+              <span class="substep-num">4</span>
+              Tap <strong>"Accept"</strong> and confirm with your PIN
+            </li>
+            <li>
+              <span class="substep-num">5</span>
+              Your membership NFT will appear in your wallet
+            </li>
+          </ul>
+          <div class="info-box blue">
+            💡 This process takes less than 30 seconds. Your membership
+            is activated the moment you accept the NFT.
+          </div>
+          <button class="next-btn" onclick="completeStep(4)">
+            I've Accepted My NFT →
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step" id="step5">
+        <div class="step-header" onclick="toggleStep(5)">
+          <div class="step-number">5</div>
+          <div class="step-title">
+            <h3>Use Your Membership at Every Visit</h3>
+            <p>Show your Xaman wallet at check-in to access your benefits</p>
+          </div>
+          <span class="step-status" id="step5Status">Upcoming</span>
+        </div>
+        <div class="step-body">
+          <div class="step-divider"></div>
+          <p class="step-instruction">
+            Your CareChain NFT membership is now active. Here's how to use
+            it every time you visit the clinic:
+          </p>
+          <ul class="substeps">
+            <li>
+              <span class="substep-num">1</span>
+              Arrive at the clinic and approach the front desk
+            </li>
+            <li>
+              <span class="substep-num">2</span>
+              Open Xaman on your phone
+            </li>
+            <li>
+              <span class="substep-num">3</span>
+              Show your wallet address or QR code to the staff member
+            </li>
+            <li>
+              <span class="substep-num">4</span>
+              Staff will verify your membership instantly on their screen
+            </li>
+            <li>
+              <span class="substep-num">5</span>
+              Your tier benefits are automatically applied to your visit
+            </li>
+          </ul>
+          <div class="info-box green">
+            ✅ Think of your Xaman wallet like an Apple Wallet card.
+            Open it, show it, and your benefits are confirmed in seconds.
+          </div>
+          <button class="next-btn" onclick="completeStep(5)">
+            I'm Ready to Use My Membership ✓
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COMPLETION -->
+    <div class="completion" id="completion">
+      <div class="completion-icon">🎉</div>
+      <h2>You're All Set!</h2>
+      <p>
+        Your CareChain NFT membership is active and ready to use.
+        Show your Xaman wallet at every visit to access your benefits.
+      </p>
+      <div class="completion-actions">
+        <a href="verify.html" class="action-btn">
+          Test My Membership →
+        </a>
+        <a href="index.html" class="action-btn outline">
+          Back to Home
+        </a>
+      </div>
+    </div>
+
+    <!-- HELP SECTION -->
+    <div class="help-section">
+      <h3>Need Help?</h3>
+      <p>
+        Our support team is here to help you every step of the way.
+        Don't hesitate to reach out.
+      </p>
+      <div class="help-contact">
+        <a href="mailto:support@carechainnft.com" class="help-btn">
+          📧 Email Support
+        </a>
+        <a href="https://x.com/CareChainNFT" target="_blank" class="help-btn">
+          𝕏 Message Us on X
+        </a>
+        <span class="help-btn" onclick="alert('Please speak with clinic staff for in-person assistance.')">
+          🏥 Ask Clinic Staff
+        </span>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ============================================================
+    // CareChain NFT — Patient Onboarding
+    // Step by step guide for new patients setting up
+    // their Xaman wallet and accepting their membership NFT
+    // ============================================================
+
+    let currentStep = 1
+    const totalSteps = 5
+
+    // Set tier from URL parameter
+    // Usage: onboarding.html?tier=diamond
+    const urlParams = new URLSearchParams(window.location.search)
+    const tier = urlParams.get("tier") || "gold"
+
+    const tierConfig = {
+      diamond: { name: "Diamond", icon: "💎", class: "diamond" },
+      gold:    { name: "Gold",    icon: "🥇", class: "gold" },
+      silver:  { name: "Silver",  icon: "🥈", class: "silver" }
+    }
+
+    const t = tierConfig[tier] || tierConfig.gold
+    document.getElementById("tierBannerName").textContent =
+      t.name + " Tier Membership"
+    document.getElementById("tierBannerName").className = t.class
+    document.querySelector(".tier-banner").className =
+      "tier-banner " + t.class
+    document.querySelector(".tier-banner-icon").textContent = t.icon
+
+    // ---- COMPLETE STEP ----------------------------------
+    function completeStep(stepNum) {
+      const step = document.getElementById("step" + stepNum)
+      const status = document.getElementById("step" + stepNum + "Status")
+
+      step.classList.remove("active")
+      step.classList.add("completed")
+      status.textContent = "✓ Complete"
+
+      if (stepNum < totalSteps) {
+        const nextStep = document.getElementById("step" + (stepNum + 1))
+        const nextStatus = document.getElementById(
+          "step" + (stepNum + 1) + "Status"
+        )
+        nextStep.classList.add("active")
+        nextStatus.textContent = "Current"
+        currentStep = stepNum + 1
+
+        // Scroll to next step
+        nextStep.scrollIntoView({ behavior: "smooth", block: "center" })
+      } else {
+        // All steps complete
+        document.getElementById("stepsContainer").style.display = "none"
+        document.getElementById("completion").style.display = "block"
+        document.getElementById("completion").scrollIntoView({
+          behavior: "smooth"
+        })
+      }
+    }
+
+    // ---- TOGGLE STEP ------------------------------------
+    function toggleStep(stepNum) {
+      const step = document.getElementById("step" + stepNum)
+      if (step.classList.contains("completed")) {
+        step.classList.toggle("active")
+      }
+    }
+  </script>
+
+</body>
+</html>
