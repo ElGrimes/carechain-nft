@@ -553,8 +553,18 @@
           </button>
         </div>
         <p class="hint">
-          💡 Tip: Ask the patient to open their Xaman wallet and show their wallet address or QR code
+          💡 Ask the patient to open their Xaman app and show their wallet address or QR code
         </p>
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+          <button class="verify-btn" style="flex: 1;" id="scanBtn" onclick="startQRScan()">
+            📷 Scan QR Code
+          </button>
+        </div>
+        <div id="qrScanner" style="display:none; margin-top: 1rem;">
+          <video id="qrVideo" style="width: 100%; border-radius: 10px; border: 1px solid rgba(59,130,246,0.3);"></video>
+          <p style="font-size: 0.8rem; color: rgba(255,255,255,0.5); text-align: center; margin-top: 0.5rem;">Point camera at patient's Xaman QR code</p>
+          <button onclick="stopQRScan()" style="width: 100%; margin-top: 0.5rem; background: transparent; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.6rem; color: rgba(255,255,255,0.5); font-family: Inter, sans-serif; font-size: 0.85rem; cursor: pointer;">Cancel Scan</button>
+        </div>
       </div>
 
       <!-- LOADING -->
@@ -830,6 +840,104 @@
     }
 
     // ---- RESET ------------------------------------------
+    // ---- QR CODE SCANNER --------------------------------
+    // Uses the device camera to scan a Xaman wallet QR code
+    // and auto-populate the wallet address field
+    // Works on iPad and any device with a camera
+    let qrStream = null
+    let qrInterval = null
+
+    async function startQRScan() {
+      const scanner = document.getElementById("qrScanner")
+      const video = document.getElementById("qrVideo")
+      const scanBtn = document.getElementById("scanBtn")
+
+      try {
+        // Request camera access
+        qrStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" }
+        })
+
+        video.srcObject = qrStream
+        video.play()
+        scanner.style.display = "block"
+        scanBtn.style.display = "none"
+
+        // Use BarcodeDetector API if available (modern browsers/iPad)
+        if ("BarcodeDetector" in window) {
+          const detector = new BarcodeDetector({ formats: ["qr_code"] })
+          qrInterval = setInterval(async () => {
+            try {
+              const barcodes = await detector.detect(video)
+              if (barcodes.length > 0) {
+                const result = barcodes[0].rawValue
+                // Extract wallet address from Xaman QR
+                // Xaman QR format: https://xumm.app/sign/... or just the address
+                let address = result
+                if (result.includes("r") && result.length >= 25) {
+                  // Extract the r-address if it appears in the QR data
+                  const match = result.match(/r[a-zA-Z0-9]{24,34}/)
+                  if (match) address = match[0]
+                }
+                document.getElementById("walletInput").value = address
+                stopQRScan()
+                showNotification("✅ QR code scanned successfully", "success")
+              }
+            } catch (e) {
+              // Continue scanning
+            }
+          }, 500)
+        } else {
+          // Fallback for browsers without BarcodeDetector
+          // Load jsQR library dynamically
+          const script = document.createElement("script")
+          script.src = "https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"
+          script.onload = () => startJsQRScanning(video)
+          document.head.appendChild(script)
+        }
+
+      } catch (err) {
+        showNotification("❌ Camera access denied. Please enter address manually.", "error")
+        scanner.style.display = "none"
+        scanBtn.style.display = "block"
+      }
+    }
+
+    function startJsQRScanning(video) {
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+
+      qrInterval = setInterval(() => {
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width = video.videoWidth
+          canvas.height = video.videoHeight
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+          const code = jsQR(imageData.data, imageData.width, imageData.height)
+          if (code) {
+            let address = code.data
+            const match = code.data.match(/r[a-zA-Z0-9]{24,34}/)
+            if (match) address = match[0]
+            document.getElementById("walletInput").value = address
+            stopQRScan()
+            showNotification("✅ QR code scanned successfully", "success")
+          }
+        }
+      }, 500)
+    }
+
+    function stopQRScan() {
+      if (qrStream) {
+        qrStream.getTracks().forEach(track => track.stop())
+        qrStream = null
+      }
+      if (qrInterval) {
+        clearInterval(qrInterval)
+        qrInterval = null
+      }
+      document.getElementById("qrScanner").style.display = "none"
+      document.getElementById("scanBtn").style.display = "block"
+    }
     function resetVerification() {
       document.getElementById("walletInput").value = ""
       document.getElementById("resultSuccess").style.display = "none"
